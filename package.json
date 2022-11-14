@@ -1,0 +1,27 @@
+{
+  "name": "@devs-studio/typeorm",
+  "version": "1.0.5",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepublish": "npx tsc",
+    "build": "npx tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org@bitbucket.org/JeanPaper/devsstudio-typeorm.git"
+  },
+  "keywords": [
+    "typeorm"
+  ],
+  "author": "Devs Studio",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@devs-studio/nodejsql": "^1.0.21",
+    "typeorm": "^0.3.10"
+  }
+}

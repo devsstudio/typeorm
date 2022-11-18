@@ -68,16 +68,18 @@ export class DataService<T extends ObjectLiteral> {
         return this._getManager(transactionManager).query(query, parameters);
     }
 
-    async bulkInsert(items: any[], transactionManager: EntityManager = null) {
+    async bulkInsert(items: any[], ignore: boolean = false, transactionManager: EntityManager = null) {
         const q = this._dataSource
             .createQueryBuilder()
             .insert()
             .into(this._type)
             .values(items);
 
-        const [sql, args] = q.getQueryAndParameters();
-        const nsql = sql.replace('INSERT INTO', 'INSERT IGNORE INTO');
+        var [sql, args] = q.getQueryAndParameters();
+        if(ignore){
+            sql = sql.replace('INSERT INTO', 'INSERT IGNORE INTO');
+        }
 
-        await this.query(nsql, args, transactionManager);
+        await this.query(sql, args, transactionManager);
     }
 }

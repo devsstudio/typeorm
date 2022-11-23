@@ -7,6 +7,7 @@ import {
   Repository,
 } from "typeorm";
 import { getList as devStudioGetList } from "@devs-studio/nodejsql";
+import { ListParams } from "@devs-studio/nodejsql/dist/dto/params/list.params";
 
 export type ObjectType<T> = { new(): T };
 
@@ -29,7 +30,7 @@ export class DataService<T extends ObjectLiteral> {
     return transactionManager ? transactionManager : this._repository;
   }
 
-  getList(options: any, transactionManager: EntityManager = null) {
+  getList(options: ListParams, transactionManager: EntityManager = null) {
     return devStudioGetList(this._getExecutor(transactionManager), options);
   }
 

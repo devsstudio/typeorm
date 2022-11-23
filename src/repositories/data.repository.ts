@@ -1,15 +1,17 @@
 import {
+  DeepPartial,
   EntityManager,
   FindManyOptions,
   FindOneOptions,
   ObjectLiteral,
   QueryRunner,
   Repository,
+  SaveOptions,
 } from "typeorm";
 import { getList as devStudioGetList } from "@devs-studio/nodejsql";
 import { ListParams } from "@devs-studio/nodejsql/dist/dto/params/list.params";
 
-export type ObjectType<T> = { new(): T };
+export type ObjectType<T extends ObjectLiteral> = { new(): T };
 
 export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   private _type: ObjectType<T>;
@@ -53,6 +55,20 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       ? await transactionManager.count(this._type, options)
       : await super.count(options);
   }
+
+  async saveFromPartial(partial: DeepPartial<T>, options: SaveOptions, transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.save(partial, options)
+      : await super.save(partial, options);
+  }
+
+  async insertFromPartial(partial: Partial<T>, transactionManager?: EntityManager
+    ) {
+      return transactionManager
+        ? await transactionManager.insert(this._type, partial)
+        : await super.insert(partial);
+    }
 
   async query(
     query: string,

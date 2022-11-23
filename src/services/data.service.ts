@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 import { getList as devStudioGetList } from "@devs-studio/nodejsql";
 
-export type ObjectType<T> = { new (): T };
+export type ObjectType<T> = { new(): T };
 
 export class DataService<T extends ObjectLiteral> {
   private _type: ObjectType<T>;
@@ -25,12 +25,16 @@ export class DataService<T extends ObjectLiteral> {
     this._dataSource = dataSource;
   }
 
-  private _getManager(transactionManager: EntityManager = null) {
+  private _getExecutor(transactionManager: EntityManager = null) {
     return transactionManager ? transactionManager : this._repository;
   }
 
   getList(options: any, transactionManager: EntityManager = null) {
-    return devStudioGetList(this._getManager(transactionManager), options);
+    return devStudioGetList(this._getExecutor(transactionManager), options);
+  }
+
+  getManager() {
+    return this._dataSource.manager;
   }
 
   async findOne(
@@ -65,7 +69,7 @@ export class DataService<T extends ObjectLiteral> {
     parameters: any,
     transactionManager: EntityManager = null
   ) {
-    return this._getManager(transactionManager).query(query, parameters);
+    return this._getExecutor(transactionManager).query(query, parameters);
   }
 
   async bulkInsert(

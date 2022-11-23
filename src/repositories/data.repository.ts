@@ -1,5 +1,7 @@
 import {
   EntityManager,
+  FindManyOptions,
+  FindOneOptions,
   ObjectLiteral,
   Repository,
 } from "typeorm";
@@ -17,6 +19,41 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
 
   getList(options: ListParams, transactionManager?: EntityManager) {
     return devStudioGetList(this._getExecutor(transactionManager), options);
+  }
+
+  async findOne(
+    options: FindOneOptions<T>,
+    transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.findOne(this._type, options)
+      : await super.findOne(options);
+  }
+
+  async find(
+    options: FindManyOptions<T>,
+    transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.find(this._type, options)
+      : await super.find(options);
+  }
+
+  async count(
+    options: FindManyOptions<T>,
+    transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.count(this._type, options)
+      : await super.count(options);
+  }
+
+  async query(
+    query: string,
+    parameters: any,
+    transactionManager?: EntityManager
+  ) {
+    return this._getExecutor(transactionManager).query(query, parameters);
   }
 
   async bulkInsert(

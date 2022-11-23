@@ -19,7 +19,7 @@ export class DataRepository<T> extends Repository<T> {
   }
 
   private _getExecutor(transactionManager?: EntityManager): EntityManager | Repository<T> {
-    return transactionManager ? transactionManager : this;
+    return transactionManager ? transactionManager : this.manager;
   }
 
   getList(options: ListParams, transactionManager?: EntityManager) {

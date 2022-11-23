@@ -2,7 +2,7 @@ import {
   EntityManager,
   FindManyOptions,
   FindOneOptions,
-  ObjectLiteral,
+  QueryRunner,
   Repository,
 } from "typeorm";
 import { getList as devStudioGetList } from "@devs-studio/nodejsql";
@@ -10,8 +10,13 @@ import { ListParams } from "@devs-studio/nodejsql/dist/dto/params/list.params";
 
 export type ObjectType<T> = { new(): T };
 
-export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
+export class DataRepository<T> extends Repository<T> {
   private _type: ObjectType<T>;
+
+  constructor(type: ObjectType<T>, manager: EntityManager, queryRunner?: QueryRunner) {
+    super(type, manager, queryRunner);
+    this._type = type;
+  }
 
   private _getExecutor(transactionManager?: EntityManager): EntityManager | Repository<T> {
     return transactionManager ? transactionManager : this;

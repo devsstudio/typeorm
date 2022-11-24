@@ -7,6 +7,7 @@ import {
   QueryRunner,
   Repository,
   SaveOptions,
+  SelectQueryBuilder,
 } from "typeorm";
 import { getList as devStudioGetList } from "@devs-studio/nodejsql";
 import { ListParams } from "@devs-studio/nodejsql/dist/dto/params/list.params";
@@ -27,7 +28,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   private _getExecutor(transactionManager?: EntityManager): EntityManager | Repository<T> {
-    return transactionManager ? transactionManager : this.manager;
+    return transactionManager ? transactionManager : super.manager;
   }
 
   getList(options: ListParams, transactionManager?: EntityManager) {
@@ -105,7 +106,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async bulkInsert(
-    items: any[],
+    items: Partial<T>[],
     ignore: boolean = false,
     transactionManager?: EntityManager
   ): Promise<any> {
@@ -121,5 +122,13 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     }
 
     return await this._getExecutor(transactionManager).query(sql, args);
+  }
+
+  async query(sql: string, parameters: any[], transactionManager?: EntityManager) {
+    return await this._getExecutor(transactionManager).query(sql, parameters);
+  }
+
+  createQueryBuilder(alias?: string, queryRunner?: QueryRunner, transactionManager?: EntityManager): SelectQueryBuilder<T> {
+    return transactionManager ? transactionManager.createQueryBuilder(this._type, alias, this.queryRunner) : super.createQueryBuilder(alias, queryRunner);
   }
 }

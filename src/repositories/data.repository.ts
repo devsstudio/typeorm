@@ -11,6 +11,11 @@ import {
 import { getList as devStudioGetList } from "@devs-studio/nodejsql";
 import { ListParams } from "@devs-studio/nodejsql/dist/dto/params/list.params";
 
+export interface PureInsertOptions {
+  insertIdAt?: string,
+  updateEntity?: boolean
+}
+
 export type ObjectType<T extends ObjectLiteral> = { new(): T };
 
 export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
@@ -75,6 +80,28 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     return transactionManager
       ? await transactionManager.insert(this._type, partial)
       : await super.insert(partial);
+  }
+
+  async pureInsert(partial: DeepPartial<T>, options: PureInsertOptions, transactionManager?: EntityManager) {
+    var qb = this._getExecutor(transactionManager)
+      .createQueryBuilder()
+      .insert()
+      .into(this._type)
+      .values(partial);
+    //updateEntity cuando es true generá un select después del insert
+    if (options.updateEntity !== undefined && options.updateEntity !== null) {
+      qb.updateEntity(options.updateEntity);
+    }
+
+    var results = await qb.execute();
+    //Cuando insertIdAt es true asignará el insertId a la propiedad especificada
+    if (options.insertIdAt !== undefined && options.insertIdAt !== null) {
+      type ObjectKey = keyof typeof partial;
+      const myVar = options.insertIdAt as ObjectKey;
+      partial[myVar] = results.raw["insertId"];
+    }
+
+    return results;
   }
 
   async bulkInsert(

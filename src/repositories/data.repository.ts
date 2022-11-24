@@ -63,19 +63,18 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.save(partial, options);
   }
 
-  async insertFromPartial(partial: Partial<T>, transactionManager?: EntityManager
-    ) {
-      return transactionManager
-        ? await transactionManager.insert(this._type, partial)
-        : await super.insert(partial);
-    }
-
-  async query(
-    query: string,
-    parameters: any,
-    transactionManager?: EntityManager
+  async insertFromPartial(partial: DeepPartial<T>, transactionManager?: EntityManager
   ) {
-    return this._getExecutor(transactionManager).query(query, parameters);
+    return transactionManager
+      ? await transactionManager.insert(this._type, partial)
+      : await super.insert(partial);
+  }
+
+  async insert(partial: DeepPartial<T>, transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.insert(this._type, partial)
+      : await super.insert(partial);
   }
 
   async bulkInsert(

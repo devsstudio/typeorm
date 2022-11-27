@@ -28,7 +28,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   private _getExecutor(transactionManager?: EntityManager): EntityManager | Repository<T> {
-    return transactionManager ? transactionManager : super.manager;
+    return transactionManager ? transactionManager : this;
   }
 
   getList(options: ListParams, transactionManager?: EntityManager) {
@@ -36,7 +36,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async findOne(
-    options: FindOneOptions<T>,
+    options?: FindOneOptions<T>,
     transactionManager?: EntityManager
   ) {
     return transactionManager
@@ -45,7 +45,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async find(
-    options: FindManyOptions<T>,
+    options?: FindManyOptions<T>,
     transactionManager?: EntityManager
   ) {
     return transactionManager
@@ -54,7 +54,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async count(
-    options: FindManyOptions<T>,
+    options?: FindManyOptions<T>,
     transactionManager?: EntityManager
   ) {
     return transactionManager
@@ -62,7 +62,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.count(options);
   }
 
-  async saveFromPartial(partial: DeepPartial<T>, options: SaveOptions, transactionManager?: EntityManager
+  async saveFromPartial(partial: DeepPartial<T>, options?: SaveOptions, transactionManager?: EntityManager
   ) {
     return transactionManager
       ? await transactionManager.save(partial, options)
@@ -83,20 +83,20 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.insert(partial);
   }
 
-  async pureInsert(partial: DeepPartial<T>, options: PureInsertOptions, transactionManager?: EntityManager) {
+  async pureInsert(partial: DeepPartial<T>, options?: PureInsertOptions, transactionManager?: EntityManager) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
       .insert()
       .into(this._type)
       .values(partial);
     //updateEntity cuando es true generá un select después del insert
-    if (options.updateEntity !== undefined && options.updateEntity !== null) {
+    if (options?.updateEntity !== undefined && options.updateEntity !== null) {
       qb.updateEntity(options.updateEntity);
     }
 
     var results = await qb.execute();
     //Cuando insertIdAt es true asignará el insertId a la propiedad especificada
-    if (options.insertIdAt !== undefined && options.insertIdAt !== null) {
+    if (options?.insertIdAt !== undefined && options.insertIdAt !== null) {
       type ObjectKey = keyof typeof partial;
       const myVar = options.insertIdAt as ObjectKey;
       partial[myVar] = results.raw["insertId"];
@@ -125,7 +125,11 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async query(sql: string, parameters: any[], transactionManager?: EntityManager) {
-    return await this._getExecutor(transactionManager).query(sql, parameters);
+    if (transactionManager) {
+      return await transactionManager.query(sql, parameters);
+    } else {
+      return await super.query(sql, parameters);
+    }
   }
 
   createQueryBuilder(alias?: string, queryRunner?: QueryRunner, transactionManager?: EntityManager): SelectQueryBuilder<T> {

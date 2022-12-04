@@ -3,6 +3,7 @@ import {
   EntityManager,
   FindManyOptions,
   FindOneOptions,
+  FindOptionsWhere,
   ObjectLiteral,
   QueryRunner,
   Repository,
@@ -31,6 +32,10 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     return transactionManager ? transactionManager : this;
   }
 
+  generateListParams(timezoneOffset: number): ListParams {
+    return null;
+  }
+
   getList(options: ListParams, transactionManager?: EntityManager) {
     return devStudioGetList(this._getExecutor(transactionManager), options);
   }
@@ -44,6 +49,15 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.findOne(options);
   }
 
+  async findOneBy(
+    options?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+    transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.findOneBy(this._type, options)
+      : await super.findOneBy(options);
+  }
+
   async find(
     options?: FindManyOptions<T>,
     transactionManager?: EntityManager
@@ -51,6 +65,15 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     return transactionManager
       ? await transactionManager.find(this._type, options)
       : await super.find(options);
+  }
+
+  async findBy(
+    options?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+    transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.findBy(this._type, options)
+      : await super.findBy(options);
   }
 
   async count(

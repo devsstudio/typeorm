@@ -4,6 +4,7 @@ import {
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
+  ObjectID,
   ObjectLiteral,
   QueryRunner,
   Repository,
@@ -106,6 +107,14 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.insert(partial);
   }
 
+  async update(criteria: string | number | FindOptionsWhere<T> | Date | ObjectID | string[] | number[] | Date[] | ObjectID[],
+    partial: DeepPartial<T>, transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.update(this._type, criteria, partial)
+      : await super.update(criteria, partial);
+  }
+
   async pureInsert(partial: DeepPartial<T>, options?: PureInsertOptions, transactionManager?: EntityManager) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
@@ -145,6 +154,13 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     }
 
     return await this._getExecutor(transactionManager).query(sql, args);
+  }
+
+  async delete(criteria: string | number | Date | ObjectID | string[] | number[] | Date[] | ObjectID[] | FindOptionsWhere<T>, transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.delete(this._type, criteria)
+      : await super.delete(criteria);
   }
 
   async query(sql: string, parameters: any[], transactionManager?: EntityManager) {

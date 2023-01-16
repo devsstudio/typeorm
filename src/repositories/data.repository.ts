@@ -29,8 +29,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     this._type = type;
   }
 
-  private _getExecutor(transactionManager?: EntityManager): EntityManager | Repository<T> {
-    return transactionManager ? transactionManager : this;
+  private _getExecutor(transactionManager?: EntityManager): EntityManager {
+    return transactionManager ? transactionManager : this.manager;
   }
 
   generateListParams(timezoneOffset: number): ListParams {

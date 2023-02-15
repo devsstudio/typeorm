@@ -19,6 +19,11 @@ export interface PureInsertOptions {
   updateEntity?: boolean
 }
 
+export interface PureInsertReturningOptions {
+  returning?: string[],
+  updateEntity?: boolean
+}
+
 export type ObjectType<T extends ObjectLiteral> = { new(): T };
 
 export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
@@ -115,6 +120,13 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.update(criteria, partial);
   }
 
+  /**
+   * Use for MySQL, MariaDB
+   * @param partial 
+   * @param options 
+   * @param transactionManager 
+   * @returns 
+   */
   async pureInsert(partial: DeepPartial<T>, options?: PureInsertOptions, transactionManager?: EntityManager) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
@@ -132,6 +144,42 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       type ObjectKey = keyof typeof partial;
       const myVar = options.insertIdAt as ObjectKey;
       partial[myVar] = results.raw["insertId"];
+    }
+
+    return results;
+  }
+
+  /**
+   * Use for SQL Server, Postgres
+   * @param partial 
+   * @param options 
+   * @param transactionManager 
+   * @returns 
+   */
+  async pureInsertReturning(partial: DeepPartial<T>, options?: PureInsertReturningOptions, transactionManager?: EntityManager) {
+    var qb = this._getExecutor(transactionManager)
+      .createQueryBuilder()
+      .insert()
+      .into(this._type)
+      .values(partial);
+    //updateEntity cuando es true generá un select después del insert
+    if (options?.updateEntity !== undefined && options.updateEntity !== null) {
+      qb.updateEntity(options.updateEntity);
+    }
+    if (options?.returning !== undefined && options.returning.length > 0) {
+      qb.returning(options.returning);
+    }
+
+    var results = await qb.execute();
+    //Cuando insertIdAt es true asignará el insertId a la propiedad especificada
+    if (results.raw?.length > 0 && options?.returning !== undefined && options.returning.length > 0) {
+      for (let [column, returned] of Object.entries<any>(results.raw[0])) {
+        if (options.returning.includes(column)) {
+          type ObjectKey = keyof typeof partial;
+          const myVar = column as ObjectKey;
+          partial[myVar] = returned;
+        }
+      }
     }
 
     return results;

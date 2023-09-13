@@ -4,7 +4,6 @@ import {
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
-  ObjectID,
   ObjectLiteral,
   QueryRunner,
   Repository,
@@ -91,6 +90,15 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.count(options);
   }
 
+  async countBy(
+    options?: FindOptionsWhere<T>,
+    transactionManager?: EntityManager
+  ) {
+    return transactionManager
+      ? await transactionManager.countBy(this._type, options)
+      : await super.countBy(options);
+  }
+
   async saveFromPartial(partial: DeepPartial<T>, options?: SaveOptions, transactionManager?: EntityManager
   ) {
     return transactionManager
@@ -112,8 +120,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.insert(partial);
   }
 
-  async update(criteria: string | number | FindOptionsWhere<T> | Date | ObjectID | string[] | number[] | Date[] | ObjectID[],
-    partial: DeepPartial<T>, transactionManager?: EntityManager
+  async update(criteria: string | number | FindOptionsWhere<T> | Date | string[] | number[] | Date[], partial: DeepPartial<T>, transactionManager?: EntityManager
   ) {
     return transactionManager
       ? await transactionManager.update(this._type, criteria, partial)
@@ -204,7 +211,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     return await this._getExecutor(transactionManager).query(sql, args);
   }
 
-  async delete(criteria: string | number | Date | ObjectID | string[] | number[] | Date[] | ObjectID[] | FindOptionsWhere<T>, transactionManager?: EntityManager
+  async delete(criteria: string | number | Date | string[] | number[] | Date[] | FindOptionsWhere<T>, transactionManager?: EntityManager
   ) {
     return transactionManager
       ? await transactionManager.delete(this._type, criteria)

@@ -106,21 +106,21 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
       : await super.save(partial, options);
   }
 
-  async insertFromPartial(partial: DeepPartial<T>, transactionManager?: EntityManager
+  async insertFromPartial(partial: Partial<T>, transactionManager?: EntityManager
   ) {
     return transactionManager
       ? await transactionManager.insert(this._type, partial)
       : await super.insert(partial);
   }
 
-  async insert(partial: DeepPartial<T>, transactionManager?: EntityManager
+  async insert(partial: Partial<T>, transactionManager?: EntityManager
   ) {
     return transactionManager
       ? await transactionManager.insert(this._type, partial)
       : await super.insert(partial);
   }
 
-  async update(criteria: string | number | FindOptionsWhere<T> | Date | string[] | number[] | Date[], partial: DeepPartial<T>, transactionManager?: EntityManager
+  async update(criteria: string | number | FindOptionsWhere<T> | Date | string[] | number[] | Date[], partial: Partial<T>, transactionManager?: EntityManager
   ) {
     return transactionManager
       ? await transactionManager.update(this._type, criteria, partial)
@@ -134,7 +134,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
    * @param transactionManager 
    * @returns 
    */
-  async pureInsert(partial: DeepPartial<T>, options?: PureInsertOptions, transactionManager?: EntityManager) {
+  async pureInsert(partial: Partial<T>, options?: PureInsertOptions, transactionManager?: EntityManager) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
       .insert()
@@ -163,7 +163,7 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
    * @param transactionManager 
    * @returns 
    */
-  async pureInsertReturning(partial: DeepPartial<T>, options?: PureInsertReturningOptions, transactionManager?: EntityManager) {
+  async pureInsertReturning(partial: Partial<T>, options?: PureInsertReturningOptions, transactionManager?: EntityManager) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
       .insert()

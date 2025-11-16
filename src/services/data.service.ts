@@ -26,11 +26,11 @@ export class DataService<T extends ObjectLiteral> {
     this._dataSource = dataSource;
   }
 
-  private _getExecutor(transactionManager: EntityManager = null) {
+  private _getExecutor(transactionManager: EntityManager | null = null) {
     return transactionManager ? transactionManager : this._repository;
   }
 
-  getList(options: ListParams, transactionManager: EntityManager = null) {
+  getList(options: ListParams, transactionManager: EntityManager | null = null) {
     return devStudioGetList(this._getExecutor(transactionManager), options);
   }
 
@@ -40,7 +40,7 @@ export class DataService<T extends ObjectLiteral> {
 
   async findOne(
     options: FindOneOptions<T>,
-    transactionManager: EntityManager = null
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.findOne(this._type, options)
@@ -49,7 +49,7 @@ export class DataService<T extends ObjectLiteral> {
 
   async find(
     options: FindManyOptions<T>,
-    transactionManager: EntityManager = null
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.find(this._type, options)
@@ -58,7 +58,7 @@ export class DataService<T extends ObjectLiteral> {
 
   async count(
     options: FindManyOptions<T>,
-    transactionManager: EntityManager = null
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.count(this._type, options)
@@ -68,7 +68,7 @@ export class DataService<T extends ObjectLiteral> {
   async query(
     query: string,
     parameters: any,
-    transactionManager: EntityManager = null
+    transactionManager: EntityManager | null = null
   ) {
     return this._getExecutor(transactionManager).query(query, parameters);
   }
@@ -76,7 +76,7 @@ export class DataService<T extends ObjectLiteral> {
   async bulkInsert(
     items: any[],
     ignore: boolean = false,
-    transactionManager: EntityManager = null
+    transactionManager: EntityManager | null = null
   ): Promise<any> {
     const q = this._dataSource
       .createQueryBuilder()

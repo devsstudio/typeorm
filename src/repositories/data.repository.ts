@@ -33,21 +33,23 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     this._type = type;
   }
 
-  private _getExecutor(transactionManager?: EntityManager): EntityManager {
+  private _getExecutor(transactionManager: EntityManager | null = null
+  ): EntityManager {
     return transactionManager ? transactionManager : this.manager;
   }
 
-  generateListParams(timezoneOffset: number): ListParams {
+  generateListParams(timezoneOffset: number): ListParams | null {
     return null;
   }
 
-  getList(options: ListParams, transactionManager?: EntityManager) {
+  getList(options: ListParams, transactionManager: EntityManager | null = null
+  ) {
     return devStudioGetList(this._getExecutor(transactionManager), options);
   }
 
   async findOne(
-    options?: FindOneOptions<T>,
-    transactionManager?: EntityManager
+    options: FindOneOptions<T>,
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.findOne(this._type, options)
@@ -55,8 +57,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async findOneBy(
-    options?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
-    transactionManager?: EntityManager
+    options: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.findOneBy(this._type, options)
@@ -64,8 +66,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async find(
-    options?: FindManyOptions<T>,
-    transactionManager?: EntityManager
+    options: FindManyOptions<T>,
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.find(this._type, options)
@@ -73,8 +75,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async findBy(
-    options?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
-    transactionManager?: EntityManager
+    options: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.findBy(this._type, options)
@@ -82,8 +84,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async count(
-    options?: FindManyOptions<T>,
-    transactionManager?: EntityManager
+    options: FindManyOptions<T>,
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.count(this._type, options)
@@ -91,36 +93,40 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   }
 
   async countBy(
-    options?: FindOptionsWhere<T>,
-    transactionManager?: EntityManager
+    options: FindOptionsWhere<T>,
+    transactionManager: EntityManager | null = null
   ) {
     return transactionManager
       ? await transactionManager.countBy(this._type, options)
       : await super.countBy(options);
   }
 
-  async saveFromPartial(partial: DeepPartial<T>, options?: SaveOptions, transactionManager?: EntityManager
+  async saveFromPartial(partial: DeepPartial<T>, options?: SaveOptions, transactionManager: EntityManager | null = null
+
   ) {
     return transactionManager
       ? await transactionManager.save(partial, options)
       : await super.save(partial, options);
   }
 
-  async insertFromPartial(partial: Partial<T>, transactionManager?: EntityManager
+  async insertFromPartial(partial: Partial<T>, transactionManager: EntityManager | null = null
+
   ) {
     return transactionManager
       ? await transactionManager.insert(this._type, partial)
       : await super.insert(partial);
   }
 
-  async insert(partial: Partial<T>, transactionManager?: EntityManager
+  async insert(partial: Partial<T>, transactionManager: EntityManager | null = null
+
   ) {
     return transactionManager
       ? await transactionManager.insert(this._type, partial)
       : await super.insert(partial);
   }
 
-  async update(criteria: string | number | FindOptionsWhere<T> | Date | string[] | number[] | Date[], partial: Partial<T>, transactionManager?: EntityManager
+  async update(criteria: string | number | FindOptionsWhere<T> | Date | string[] | number[] | Date[], partial: Partial<T>, transactionManager: EntityManager | null = null
+
   ) {
     return transactionManager
       ? await transactionManager.update(this._type, criteria, partial)
@@ -134,7 +140,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
    * @param transactionManager 
    * @returns 
    */
-  async pureInsert(partial: Partial<T>, options?: PureInsertOptions, transactionManager?: EntityManager) {
+  async pureInsert(partial: Partial<T>, options?: PureInsertOptions, transactionManager: EntityManager | null = null
+  ) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
       .insert()
@@ -163,7 +170,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
    * @param transactionManager 
    * @returns 
    */
-  async pureInsertReturning(partial: Partial<T>, options?: PureInsertReturningOptions, transactionManager?: EntityManager) {
+  async pureInsertReturning(partial: Partial<T>, options?: PureInsertReturningOptions, transactionManager: EntityManager | null = null
+  ) {
     var qb = this._getExecutor(transactionManager)
       .createQueryBuilder()
       .insert()
@@ -195,9 +203,10 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
   async bulkInsert(
     items: Partial<T>[],
     ignore: boolean = false,
-    transactionManager?: EntityManager
+    transactionManager: EntityManager | null = null
+
   ): Promise<any> {
-    const q = this
+    const q = super
       .createQueryBuilder()
       .insert()
       .into(this._type)
@@ -211,14 +220,16 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     return await this._getExecutor(transactionManager).query(sql, args);
   }
 
-  async delete(criteria: string | number | Date | string[] | number[] | Date[] | FindOptionsWhere<T>, transactionManager?: EntityManager
+  async delete(criteria: string | number | Date | string[] | number[] | Date[] | FindOptionsWhere<T>, transactionManager: EntityManager | null = null
+
   ) {
     return transactionManager
       ? await transactionManager.delete(this._type, criteria)
       : await super.delete(criteria);
   }
 
-  async query(sql: string, parameters: any[], transactionManager?: EntityManager) {
+  async query(sql: string, parameters: any[], transactionManager: EntityManager | null = null
+  ) {
     if (transactionManager) {
       return await transactionManager.query(sql, parameters);
     } else {
@@ -226,7 +237,8 @@ export class DataRepository<T extends ObjectLiteral> extends Repository<T> {
     }
   }
 
-  createQueryBuilder(alias?: string, queryRunner?: QueryRunner, transactionManager?: EntityManager): SelectQueryBuilder<T> {
+  createQueryBuilder(alias: string, queryRunner?: QueryRunner, transactionManager: EntityManager | null = null
+  ): SelectQueryBuilder<T> {
     return transactionManager ? transactionManager.createQueryBuilder(this._type, alias, this.queryRunner) : super.createQueryBuilder(alias, queryRunner);
   }
 }

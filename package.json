@@ -1,6 +1,6 @@
 {
   "name": "@devs-studio/typeorm",
-  "version": "1.0.69",
+  "version": "1.0.71",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,10 +18,10 @@
   "author": "Devs Studio",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^4.8.4"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@devs-studio/nodejsql": "^1.0.56",
-    "typeorm": "^0.3.25"
+    "@devs-studio/nodejsql": "^1.0.58",
+    "typeorm": "^0.3.27"
   }
 }

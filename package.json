@@ -1,6 +1,6 @@
 {
   "name": "@devs-studio/typeorm",
-  "version": "1.0.71",
+  "version": "1.0.75",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +21,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@devs-studio/nodejsql": "^1.0.58",
+    "@devs-studio/nodejsql": "^1.0.61"
+  },
+  "peerDependencies": {
     "typeorm": "^0.3.27"
   }
 }
